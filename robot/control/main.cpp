@@ -25,7 +25,7 @@
 #include "modules/RotaryDialModule.hpp"
 #include "LockedStruct.hpp"
 
-#define SUPER_LOOP_FREQ 200
+#define SUPER_LOOP_FREQ 20
 #define SUPER_LOOP_PERIOD (1000000L / SUPER_LOOP_FREQ)
 
 // Max number of super loop cycles a proc can miss if it
