@@ -62,10 +62,10 @@ void RobotEstimator::update(Eigen::Matrix<float, numOutputs, 1> z) {
 
     x_hat += K * y;
     static int i = 0;
-    if (i++ % 20 == 0) {
-        printf("xhat: %f %f %f\r\n", x_hat(0), x_hat(1), x_hat(2));
-        printf("zhat: %f %f %f\r\n", zhat(0), zhat(1), zhat(2), zhat(3), zhat(4));
-    }
+    // if (i++ % 20 == 0) {
+    //     printf("xhat: %f %f %f\r\n", x_hat(0), x_hat(1), x_hat(2));
+    //     printf("zhat: %f %f %f\r\n", zhat(0), zhat(1), zhat(2), zhat(3), zhat(4));
+    // }
 }
 
 void RobotEstimator::getState(Eigen::Matrix<float, numStates, 1>& state) {
