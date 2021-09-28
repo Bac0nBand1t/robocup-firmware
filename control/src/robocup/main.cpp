@@ -36,8 +36,8 @@
 // needs to run
 #define MAX_MISS_CNT 5
 
-
-struct MODULE_META_DATA {
+struct MODULE_META_DATA
+{
     // Time in sysclock ticks of last module execution
     uint32_t lastRunTime;
 
@@ -59,17 +59,17 @@ struct MODULE_META_DATA {
                      uint32_t modulePeriod,
                      int32_t moduleRunTime,
                      GenericModule *module)
-            : lastRunTime(lastRunTime),
-              nextRunTime(lastRunTime + modulePeriod * DWT_SysTick_To_us()),
-              modulePeriod(modulePeriod * DWT_SysTick_To_us()),
-              moduleRunTime(moduleRunTime * DWT_SysTick_To_us()),
-              module(module) {}
+        : lastRunTime(lastRunTime),
+          nextRunTime(lastRunTime + modulePeriod * DWT_SysTick_To_us()),
+          modulePeriod(modulePeriod * DWT_SysTick_To_us()),
+          moduleRunTime(moduleRunTime * DWT_SysTick_To_us()),
+          module(module) {}
 };
 
 static std::vector<GenericModule *> moduleList;
 
-[[noreturn]]
-void startModule(void *pvModule) {
+[[noreturn]] void startModule(void *pvModule)
+{
     GenericModule *module = static_cast<GenericModule *>(pvModule);
 
     printf("[INFO] Starting module %s\r\n", module->name);
@@ -79,31 +79,37 @@ void startModule(void *pvModule) {
     TickType_t last_wait_time = xTaskGetTickCount();
     TickType_t increment = module->period.count();
 
-    while (true) {
+    while (true)
+    {
         module->entry();
         vTaskDelayUntil(&last_wait_time, increment);
     }
 }
 
-std::vector<const char*> failed_modules;
+std::vector<const char *> failed_modules;
 size_t free_space;
 
-void createModule(GenericModule *module) {
+void createModule(GenericModule *module)
+{
     BaseType_t result = xTaskCreate(startModule,
                                     module->name,
                                     module->stackSize,
                                     module,
                                     module->priority,
                                     &(module->handle));
-    if (result != pdPASS) {
+    if (result != pdPASS)
+    {
         printf("[ERROR] Failed to initialize task %s for reason %x:\r\n", module->name, module->stackSize);
         failed_modules.push_back(module->name);
-    } else {
+    }
+    else
+    {
         printf("[INFO] Initialized task %s.\r\n", module->name);
     }
 }
 
-int main() {
+int main()
+{
     static LockedStruct<I2C> sharedI2C(SHARED_I2C_BUS);
     static std::unique_ptr<SPI> fpgaSPI = std::make_unique<SPI>(FPGA_SPI_BUS, std::nullopt, 16'000'000);
     static LockedStruct<SPI> sharedSPI(SHARED_SPI_BUS, std::nullopt, 100'000);
@@ -178,5 +184,45 @@ int main() {
 
     printf("Failed to start scheduler!\r\n");
 
-    for (;;) {}
+    for (;;)
+    {
+    }
 }
+
+// #include "mtrain.hpp"
+// #include "SPI.hpp"
+// #include "iodefs.h"
+// #include "drivers/MCP23017.hpp"
+// #include "LockedStruct.hpp"
+// #include "MicroPackets.hpp"
+// #include "drivers/MCP23017.hpp"
+// #include "drivers/RotarySelector.hpp"
+// #include "drivers/IOExpanderDigitalInOut.hpp"
+// #include <memory>
+
+// DebugInfo debugInfo;
+
+// int main()
+// {
+//     std::unique_ptr<SPI> fpgaKickerSPI = std::make_unique<SPI>(FPGA_SPI_BUS, std::nullopt, 16'000'000);
+//     FPGA fpga(fpgaKickerSPI, p31, p14,
+//               p13, p15)
+
+//         while (true)
+//     {
+
+//         printf("RobotID: %d\r\n", robotID.robotID);
+
+//         float duty = 10;
+
+//         motorCommand.isValid = true;
+//         motorCommand.lastUpdate = HAL_GetTick();
+//         for (int i = 0; i < 4; i++)
+//         {
+//             motorCommand.wheels[i] = duty;
+//         }
+//         motorCommand.dribbler = abs(duty * 127);
+//         fpga.entry();
+//         HAL_Delay(100);
+//     }
+// }
